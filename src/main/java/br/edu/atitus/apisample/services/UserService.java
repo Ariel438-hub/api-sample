@@ -35,14 +35,26 @@ public class UserService implements UserDetailsService {
 
         if (newUser.getEmail() == null || newUser.getEmail().isBlank())
             throw new Exception("E-mail informado inválido!");
+
         newUser.setEmail(newUser.getEmail().trim().toLowerCase());
+
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}(\\.[A-Za-z]{2,})?$";
+
+        if (!newUser.getEmail().matches(emailRegex))
+            throw new Exception("Formato de e-mail inválido!");
         // TODO fazer validação do formato de e-mail
 
         if (repository.existsByEmail(newUser.getEmail()))
             throw new Exception("Já existe usuário cadastrado com este e-mail!");
 
         if (newUser.getPassword() == null || newUser.getPassword().length() < 8)
-            throw new Exception("Password informado inválido!");
+            throw new Exception("A senha deve possuir no mínimo 8 caracteres!");
+
+        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$";
+
+        if (!newUser.getPassword().matches(passwordRegex))
+            throw new Exception(
+            "A senha deve conter pelo menos uma letra maiúscula, uma minúscula e um número!");
         // TODO fazer validação de qualidade de senha
 
         newUser.setPassword(encoder.encode(newUser.getPassword()));
